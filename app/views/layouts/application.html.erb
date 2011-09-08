@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>ATS Web interface</title>
+  <%= stylesheet_link_tag :all, "redmond/jquery-ui" %>
+  <%= javascript_include_tag "debug", :defaults, "jquery-ui", "jquery.contextmenu" %>
+  <%= csrf_meta_tag %>
+</head>
+<body>
+<div class="wrapper">
+  <div class="header">
+    ATS Crawler Web interface.
+  </div>
+  <ul class="topmenu">
+    <li <%= controller.controller_name == "sites" || controller.controller_name == "results" ? "class=selected" : "" %>><%= link_to "Sites & Results", sites_path %></li>
+    <li <%= controller.controller_name == "logins" ? "class=selected" : "" %>><%= link_to "Logins", logins_path %></li>
+    <li <%= controller.controller_name == "parsers" ? "class=selected" : "" %>><%= link_to "Parsers", parsers_path %></li>
+  </ul>
+  <div class="content">
+    <%= show_flash %>
+    <%= yield %>
+  </div>
+  <div class="footer_spacer"></div>
+</div>
+<div class="footer">&copy <a href="mailto:krupa.wojciech@gmail.com">Wojciech Krupa</a>, 2011</div>
+
+</body>
+</html>

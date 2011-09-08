@@ -1,0 +1,26 @@
+# Sample localization file for English. Add more files in this directory for other locales.
+# See http://github.com/svenfuchs/rails-i18n/tree/master/rails%2Flocale for starting points.
+
+en:
+  hello: "Hello world"
+  fields:
+    working_title: "Working title"
+    location: "Location"
+    organization_name: "Organization Name"
+    department_description: "Department description"
+    brief_description: "Brief description"
+    detailed_description: "Detailed description"
+    job_requirements: "Job requirements"
+    additional_details: "Additional details"
+    how_to_apply: "How to apply"
+    link: "Link"
+    html: "HTML"
+    ref_code: "Ref code"
+    time_crawled: "Time crawled"
+  values:
+    "1": "yes"
+    "0": "no"
+    y: "yes"
+    n: "no"
+  hints:
+    gears_button: "right click for: options/actions"

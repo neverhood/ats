@@ -1,0 +1,28 @@
+<%= form_for(@available_field) do |f| %>
+    <% if @available_field.errors.any? %>
+        <div id="error_explanation">
+          <h2><%= pluralize(@available_field.errors.count, "error") %> prohibited this available_field from being
+            saved:</h2>
+
+          <ul>
+            <% @available_field.errors.full_messages.each do |msg| %>
+                <li><%= msg %></li>
+            <% end %>
+          </ul>
+        </div>
+    <% end %>
+    <div class="form_hint">These are fields which will appear available for select when you will define a "site".<br>
+      (usually they will be filled in kind of combo-box)<br>
+      Each field name must be unique for each parser.
+    </div>
+    <input type="hidden" name="parser_id" value="<%= @parser.id %>">
+    <input type="hidden" name="available_field[parser_id]" value="<%= @parser.id %>">
+    <div class="field">
+      <%= f.label :field_name %>
+      <br/>
+      <%= f.text_field :field_name %>
+    </div>
+    <div class="actions">
+      <%= f.submit :class=>"crud_button btn_save_form" %>
+    </div>
+<% end %>

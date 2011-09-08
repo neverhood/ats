@@ -1,0 +1,62 @@
+<h1>&lt;<%= @site.title %>&gt; details</h1>
+<p>
+  <b>ID:</b>
+  <%= @site.id %>
+</p>
+<p>
+  <b>Title:</b>
+  <%= @site.title %>
+</p>
+<p>
+  <b>Status:</b>
+  <span site_id="<%= @site.id %>" class="<%= site_status_class @site %>"><%= @site.status %></span>
+</p>
+
+<p>
+  <b>Active:</b>
+  <% if @site.active == "y" %>
+      <%= image_tag "check.png", :title=>"active" %>
+  <% else %>
+      <%= image_tag "uncheck.png", :title => "inactive" %>
+  <% end %>
+</p>
+
+<p>
+  <b>Parser:</b>
+  <%= link_to @site.parser.title, @site.parser %>
+</p>
+
+<p>
+  <b>Url:</b>
+  <%= link_to @site.url, @site.url, :target=>"_blank" %>
+</p>
+
+<p>
+  <b>Save html:</b>
+  <% if @site.save_html == "y" %>
+      <%= image_tag "check.png", :title=>"active" %>
+  <% else %>
+      <%= image_tag "uncheck.png", :title => "inactive" %>
+  <% end %>
+</p>
+
+<p>
+  <b>Runs:</b>
+  <%= @site.runs %>
+</p>
+<%= link_to 'Sites list', sites_path, :class=>"crud_button btn_list" %><%= link_to 'Edit', edit_site_path(@site), :class=>"crud_button btn_edit" %><%= link_to 'Destroy', @site, :confirm => 'Are you sure?', :method => :delete, :class=>"crud_button btn_delete" %><%= run_button_for @site, false %><%= link_to 'Results', site_results_path(@site), :class=>"crud_button btn_results" %>
+<%= render :template=>"xpaths/index" %>
+<div style="clear:both;"></div>
+<% sites_to_copy_fields_from = Site.select_for_copy(@site) %>
+<% if sites_to_copy_fields_from.length > 0 %>
+    <%= form_tag("/sites/#{@site.id}/copy", :method => :post) do |f| %>
+        <div class="form_hint">You can also</div>
+        <%= submit_tag "Copy fields from:", {:class=>"crud_button btn_copy"} %>
+        <%= select_tag :from_id, options_for_select(sites_to_copy_fields_from) %> site.
+
+    <% end %>
+<% else %>
+    <div class="form_hint">If there would be a site with same parser as this one, we would show you here a select box to
+      chose that site and copy fields from it.
+    </div>
+<% end %>

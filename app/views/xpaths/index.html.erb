@@ -1,0 +1,44 @@
+<h1>Fields for &lt;<%= link_to @site_title, site_path(@site) %>&gt; site</h1>
+<%#= paginate @xpaths %>
+<table class="db_table" cellpadding="0" cellspacing="1">
+  <tr>
+    <th>Field</th>
+    <th>Xpath</th>
+    <th>Index</th>
+    <th>Full</th>
+    <th colspan="2">Actions</th>
+  </tr>
+
+  <% @xpaths.each do |xpath| %>
+      <tr class="data_row">
+        <td><%= link_to xpath.available_field.field_name, site_xpath_path(@site, xpath) %></td>
+        <td><%= simple_format xpath.xpath %></td>
+        <td>
+          <% if xpath.show_in_index == 1 %>
+              <%= image_tag "check.png", :title=>"active" %>
+          <% else %>
+              <%= image_tag "uncheck.png", :title => "inactive" %>
+          <% end %></td>
+        <td>
+          <% if xpath.show_in_full == 1 %>
+              <%= image_tag "check.png", :title=>"active" %>
+          <% else %>
+              <%= image_tag "uncheck.png", :title => "inactive" %>
+          <% end %></td>
+        <td>
+          <div id="button_xpath_<%= xpath.id %>" class="button_16" title="<%= t "hints.gears_button" %>"></div>
+          <script>menus ["button_xpath_<%= xpath.id %>"] = {items:[
+              {label:"Show", href:"<%= site_xpath_path @site, xpath %>" },
+              {label:"Edit", href:"<%= edit_site_xpath_path @site,xpath %>" }
+          ]
+          };
+          </script>
+        </td>
+        <td><%= link_to image_tag('destroy.png', :border=>0), xpath_path(xpath)+"?site_id=#{@site.id}", :confirm => 'Are you sure?', :method => :delete, :title=>"Delete" %></td>
+      </tr>
+  <% end %>
+</table>
+<%#= paginate @xpaths %>
+<br/>
+
+<%= link_to 'New Field', new_site_xpath_path(@site), :class=>"crud_button btn_new" %>

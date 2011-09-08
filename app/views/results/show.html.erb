@@ -1,0 +1,38 @@
+<h1>Result details</h1>
+<p>
+  <strong>Result ID:</strong>
+  <%= @result.id %>
+</p>
+
+<p>
+  <strong>Ref code:</strong>
+  <%= @result.ref_code %>
+</p>
+<p>
+  <strong>Time crawled:</strong>
+  <%= @result.time_crawled %>
+</p>
+<p>
+  <strong>Site:</strong>
+  <%= link_to @site.title, @site %>
+</p>
+<% fields = Result.fields_as_hash @result.result_fields %>
+<% @site.xpaths.each do |x| %>
+    <% unless x.available_field.field_name == "html" || x.available_field.field_name == "ref_code" || x.show_in_full == 0 %>
+        <p>
+          <strong><%= x.available_field.field_name %>:</strong>
+          <%= fields[x.id] %>
+        </p>
+    <% end %>
+<% end %>
+
+<p>
+  <strong>Link:</strong>
+  <%= link_to @result.link, @result.link, :target => "_blank" %>
+</p>
+
+<p></p>
+<strong>Html:</strong>
+<iframe src="/html/<%= @result.id %>" class="html_frame"><%= @result.html %></iframe>
+
+<%= link_to 'Back', "javascript: history.go(-1)", :class=>"crud_button btn_back" %><%#= link_to 'Edit', edit_site_result_path(@site, @result), :class=>"crud_button btn_edit" %>

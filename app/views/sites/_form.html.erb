@@ -1,0 +1,54 @@
+<%= form_for(@site) do |f| %>
+    <% if @site.errors.any? %>
+        <div id="error_explanation">
+          <h2><%= pluralize(@site.errors.count, "error") %> prohibited this site from being saved:</h2>
+
+          <ul>
+            <% @site.errors.full_messages.each do |msg| %>
+                <li><%= msg %></li>
+            <% end %>
+          </ul>
+        </div>
+    <% end %>
+
+    <div class="field">
+      <%= f.label :title %>
+      <br/>
+      <%= f.text_field :title %>
+    </div>
+
+    <div class="field">
+      <%= f.label :status %>
+      <br/>
+      <%= f.text_field :status %>
+      <% if @site.status != "idle" %>
+          <a href="javascript:reenableRunButton()" class="button_link">Enable run button</a>
+      <% end %>
+    </div>
+    <div class="field">
+      <%= f.label :active %>
+      <br/>
+      <%= f.select :active, {"Yes"=>"y", "No"=>"n"} %>
+    </div>
+    <div class="field">
+      <%= f.label :parser_id %>
+      <br/>
+      <%= f.select :parser_id, Parser.for_select %>
+      <% if Parser.count < 1 %>
+          <%= link_to 'Add a Parser first!', new_parser_path, :class=>"crud_button btn_new", :style => "float:none;display:inline-block" %>
+      <% end %>
+    </div>
+    <div class="field">
+      <%= f.label :url %>
+      <br/>
+      <%= f.text_field :url, :size=>100 %>
+    </div>
+    <div class="field">
+      <%= f.label :save_html %>
+      <br/>
+      <%= f.select :save_html, {"No"=>"n", "Yes"=>"y"} %>
+    </div>
+    <div class="actions">
+      <%= f.submit :class=>"crud_button btn_save_form" %>
+    </div>
+<% end %>

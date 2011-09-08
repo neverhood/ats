@@ -1,0 +1,31 @@
+<h1>&lt;<%= @parser.title %>&gt; parser details</h1>
+<p>
+  <b>Title:</b>
+  <%= @parser.title %>
+</p>
+<p>
+  <b>Class Name:</b>
+  <%= @parser.class_name %>
+</p>
+
+<p>
+  <b>Description:</b>
+  <%= simple_format @parser.description %>
+</p>
+
+<%= link_to 'Parsers list', parsers_path, :class=>"crud_button btn_list" %><%= link_to 'Edit', edit_parser_path(@parser), :class=>"crud_button btn_edit" %><%= link_to 'Destroy', @parser, :confirm => 'Are you sure?', :method => :delete, :class=>"crud_button btn_delete" %>
+<%= render :template=>"available_fields/index" %>
+<div style="clear:both;"></div>
+<% parsers_to_copy_fields_from = Parser.select_for_copy(@parser) %>
+<% if parsers_to_copy_fields_from.length > 0 %>
+    <%= form_tag("/parsers/#{@parser.id}/copy", :method => :post) do |f| %>
+        <div class="form_hint">You can also</div>
+        <%= submit_tag "Copy fields from:", {:class=>"crud_button btn_copy"} %>
+        <%= select_tag :from_id, options_for_select(parsers_to_copy_fields_from) %> parser.
+
+    <% end %>
+<% else %>
+    <div class="form_hint">If there would be a parser with fields defined, we would show you here a select box to
+      chose that parser and copy fields from it.
+    </div>
+<% end %>

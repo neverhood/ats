@@ -1,0 +1,2 @@
+module AvailableFieldsHelper
+end

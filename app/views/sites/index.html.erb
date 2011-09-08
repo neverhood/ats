@@ -1,0 +1,23 @@
+<h1>Sites</h1>
+<%= paginate @sites %>
+<table class="db_table" cellpadding="0" cellspacing="1">
+  <tr>
+    <th>Title</th>
+    <th>Active</th>
+    <th>Parser</th>
+    <th>Last run</th>
+    <th>Runs</th>
+    <th>Results #</th>
+    <th>Status</th>
+    <th colspan="3">actions</th>
+  </tr>
+
+  <% @sites.each do |site| %>
+      <tr class="data_row" site_id="<%= site.id %>">
+        <%= render :partial => 'site_row', :locals=>{:site=>site} %>
+      </tr>
+  <% end %>
+</table>
+<%= paginate @sites %>
+<br/>
+<%= link_to 'New Site', new_site_path, :class=>"crud_button btn_new" %>

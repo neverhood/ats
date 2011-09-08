@@ -1,0 +1,37 @@
+<div class="form_hint">This area is for skilled programmers only!<br>
+  Most likely you wish to change Parser's title or description here.<br>
+  <strong>Changing its "Class name" requires 100% understanding of what you are doing!</strong>
+</div>
+<%= form_for(@parser) do |f| %>
+    <% if @parser.errors.any? %>
+        <div id="error_explanation">
+          <h2><%= pluralize(@parser.errors.count, "error") %> prohibited this parser from being saved:</h2>
+
+          <ul>
+            <% @parser.errors.full_messages.each do |msg| %>
+                <li><%= msg %></li>
+            <% end %>
+          </ul>
+        </div>
+    <% end %>
+
+    <div class="field">
+      <%= f.label :title %>
+      <br/>
+      <%= f.text_field :title %>
+    </div>
+    <div class="field">
+      <%= f.label :class_name %>
+      <br/>
+      <%= f.text_field :class_name %>
+    </div>
+    <div class="field">
+      <%= f.label :description %>
+      <br/>
+      <%= f.text_area :description %>
+    </div>
+
+    <div class="actions">
+      <%= f.submit :class=>"crud_button btn_save_form" %>
+    </div>
+<% end %>

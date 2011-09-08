@@ -1,0 +1,28 @@
+<h1>Fields available for &lt;<%= link_to @parser.title, parser_path(@parser) %>&gt; parser</h1>
+
+<table class="db_table" cellpadding="0" cellspacing="1">
+  <tr>
+    <th>Field name</th>
+    <th colspan="2">Actions</th>
+  </tr>
+
+  <% @available_fields.each do |available_field| %>
+      <tr class="data_row">
+        <td><%= available_field.field_name %></td>
+        <td>
+          <div id="button_available_field_<%= available_field.id %>" class="button_16" title="<%= t "hints.gears_button" %>"></div>
+          <script>menus ["button_available_field_<%= available_field.id %>"] = {items:[
+              {label:"Show", href:"<%= parser_available_field_path @parser, available_field %>" },
+              {label:"Edit", href:"<%= edit_parser_available_field_path @parser,available_field %>" }
+          ]
+          };
+          </script>
+        </td>
+        <td><%= link_to image_tag('destroy.png', :border=>0), available_field_path(available_field)+"?parser_id=#{@parser.id}", :confirm => 'Are you sure?', :method => :delete, :title=>"Delete" %></td>
+      </tr>
+  <% end %>
+</table>
+
+<br/>
+
+<%= link_to 'New available field', new_parser_available_field_path(@parser), :class=>"crud_button btn_new" %>

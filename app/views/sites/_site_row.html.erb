@@ -1,0 +1,27 @@
+<td><%= link_to site.title, site_path(site) %></td>
+<td align="center">
+  <% if site.active == "y" %>
+      <%= image_tag "check.png", :title=>"active" %>
+  <% else %>
+      <%= image_tag "uncheck.png", :title => "inactive" %>
+  <% end %>
+</td>
+<td><%= link_to site.parser.title, parser_path(site.parser) %></td>
+<td><%= site.last_run %></td>
+<td><%= site.runs %></td>
+<td><%= site.results.count %></td>
+<td class="<%= site_status_class(site) %>" title="Site status is updated each 5 seconds"><%= site.status %></td>
+<td>
+  <div id="button_site_<%= site.id %>" class="button_16" title="<%= t "hints.gears_button" %>"></div>
+  <script>menus ["button_site_<%= site.id %>"] = {
+      items:[
+          {label:"Show", href:"<%= site_path site %>" },
+          {label:"Edit", href:"<%= edit_site_path site %>" },
+          {label:"Results", href:"<%= site_results_path site %>" }
+      ]
+  };
+  </script>
+</td>
+<td>
+  <%= run_button_for site, true %></td>
+<td><%= link_to image_tag('destroy.png', :border=>0), site, :confirm => 'Are you sure?', :method => :delete, :title=>"Delete" %></td>

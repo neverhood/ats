@@ -1,0 +1,13 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <b>Field name:</b>
+  <%= @available_field.field_name %>
+</p>
+
+<p>
+  <b>Parser:</b>
+  <%= @available_field.parser_id %>
+</p>
+
+<%= link_to 'Fields list', parser_path(@parser), :class=>"crud_button btn_list" %><%= link_to 'Edit', edit_parser_available_fields_path(@site, @xpath), :class=>"crud_button btn_edit" %>

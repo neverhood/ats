@@ -1,0 +1,30 @@
+<h1>Parsers</h1>
+<%= paginate @parsers %>
+<table class="db_table" cellpadding="0" cellspacing="1">
+  <tr>
+    <th>Title</th>
+    <th>Class Name</th>
+    <th colspan="2">actions</th>
+  </tr>
+
+  <% @parsers.each do |parser| %>
+      <tr class="data_row">
+        <td><%= link_to parser.title, parser_path(parser) %></td>
+        <td><%=parser.class_name %></td>
+        <td>
+          <div id="button<%= parser.id %>" class="button_16" title="<%= t "hints.gears_button" %>"></div>
+          <script>menus ["button<%= parser.id %>"] = {items:[
+              {label:"Show", href:"<%= parser_path parser %>" },
+              {label:"Edit", href:"<%= edit_parser_path parser %>" }
+          ]
+          };
+          </script>
+        </td>
+        <td><%= link_to image_tag('destroy.png', :border=>0), parser, :confirm => 'Are you sure?', :method => :delete, :title=>"Delete" %></td>
+      </tr>
+  <% end %>
+</table>
+<%= paginate @parsers %>
+<br/>
+
+<%= link_to 'New Parser', new_parser_path, :class=>"crud_button btn_new" %>

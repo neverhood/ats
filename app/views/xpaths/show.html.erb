@@ -1,0 +1,33 @@
+<h1>Field details</h1>
+<p>
+  <b>Field:</b>
+  <%= @xpath.available_field.field_name %>
+</p>
+
+<p>
+  <b>Xpath:</b>
+  <%= simple_format @xpath.xpath %>
+</p>
+<p>
+  <b>Delimiter:</b> <span style="background-color:#eee"><%= @xpath.delimiter %></span>
+</p>
+<p>
+  <b>Show in index view:</b>
+  <% if @xpath.show_in_index == 1 %>
+      <%= image_tag "check.png", :title=>"active" %>
+  <% else %>
+      <%= image_tag "uncheck.png", :title => "inactive" %>
+  <% end %>
+</p>
+<p>
+  <b>Show in full view:</b>
+  <% if @xpath.show_in_full == 1 %>
+      <%= image_tag "check.png", :title=>"active" %>
+  <% else %>
+      <%= image_tag "uncheck.png", :title => "inactive" %>
+  <% end %>
+</p>
+<p>
+  <b>Order:</b>  <%= @xpath.pos %>
+</p>
+<%= link_to 'Fields list', site_xpaths_path(@site), :class=>"crud_button btn_list" %><%= link_to 'Edit', edit_site_xpath_path(@site, @xpath), :class=>"crud_button btn_edit" %>

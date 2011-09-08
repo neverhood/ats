@@ -1,0 +1,24 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <b>Title:</b>
+  <%= @login.title %>
+</p>
+
+<p>
+  <b>Login:</b>
+  <%= @login.login %>
+</p>
+
+<p>
+  <b>Password:</b>
+  <%= @login.password %>
+</p>
+
+<p>
+  <b>Url:</b>
+  <%= @login.url %>
+</p>
+
+<%= link_to 'Logins list', logins_path, :class=>"crud_button btn_list" %>
+<%= link_to 'Edit', edit_login_path(@login), :class=>"crud_button btn_edit" %>

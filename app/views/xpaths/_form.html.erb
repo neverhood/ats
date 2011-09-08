@@ -1,0 +1,50 @@
+<%= form_for(@xpath) do |f| %>
+    <% if @xpath.errors.any? %>
+        <div id="error_explanation">
+          <h2><%= pluralize(@xpath.errors.count, "error") %> prohibited this xpath from being saved:</h2>
+
+          <ul>
+            <% @xpath.errors.full_messages.each do |msg| %>
+                <li><%= msg %></li>
+            <% end %>
+          </ul>
+        </div>
+    <% end %>
+    <div class="form_hint">Each field must appear only once.<br>
+      <strong>"Ref code" field is mandatory</strong><br>
+      However some parsers can manage it using their inner algorithms. Please
+      consult <%= link_to "parser's", parser_path(@site.parser) %> description.
+    </div>
+    <input type="hidden" name="site_id" value="<%= @site.id %>">
+    <input type="hidden" name="xpath[site_id]" value="<%= @site.id %>">
+    <div class="field">
+      <%= f.label :field_name, :for=>:xpath_available_field_id %>
+      <%= f.select :available_field_id, options_for_select(AvailableField.for_options(@site.parser), @xpath.available_field_id) %>
+    </div>
+    <div class="field">
+      <%= f.label :xpath %>
+      <div class="form_hint">You can use several XPathes to form one result field.<br>Each two XPaths must be separated
+        by one empty line (hit [Enter] button on the keyboard twice.)
+      </div>
+      <%= f.text_area :xpath, :columns=>150, :rows=>5 %>
+    </div>
+    <div class="field">
+      <%= f.label :delimiter %>
+      <%= f.text_field :delimiter %>
+    </div>
+    <div class="field">
+      <%= f.label :show_in_index %>
+      <%= f.check_box :show_in_index, {:checked_value=>1, :checked_value=>0} %>
+    </div>
+    <div class="field">
+      <%= f.label :show_in_full %>
+      <%= f.check_box :show_in_full, {:checked_value=>1, :checked_value=>0} %>
+    </div>
+    <div class="field">
+      <%= f.label :pos %>
+      <%= f.text_field :pos, :size=>3 %>
+    </div>
+    <div class="actions">
+      <%= f.submit :class=>"crud_button btn_save_form" %>
+    </div>
+<% end %>
