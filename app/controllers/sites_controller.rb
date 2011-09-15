@@ -151,7 +151,8 @@ class SitesController < ApplicationController
     @site.save
 
     require File.dirname(__FILE__)+"/../../lib/parsers/#{ @site.parser.class_name.to_s.underscore }"
-    parser_class = Module.const_get(@site.parser.class_name.to_s)
+    parser_class = @site.parser.class_name.constantize
+#    parser_class = Module.const_get(@site.parser.class_name.to_s)
 
     #some IDEs here will complain that "default constructor has no parameters"
     #disregard -- we use our custom constructors -- they take parameters
