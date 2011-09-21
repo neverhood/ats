@@ -7,7 +7,7 @@ class PCRecruiter < BaseParser
     super(page)
     form = page.form_with :id => 'mainsearch'
 
-    page = form.submit
+    page = form.submit if form # Not every site has a form
     @rows_total = $1.to_i if page.parser.xpath('//td[@id="reg5_td4"]').inner_text =~ /.*of\s*(\d+).*/
 
     log "Found #{@rows_total} results"
@@ -17,7 +17,9 @@ class PCRecruiter < BaseParser
         map { |a| a['href'] }
     }
 
-    while @rows_parsed.to_i < @rows_total
+    @done = false
+
+    until @done
       # current page: puts page.parser.xpath('//span[@class="pcrpagex"]').inner_text
       links = details_links.call(page)
 
@@ -31,6 +33,7 @@ class PCRecruiter < BaseParser
       end
 
       form = page.form_with(:id => 'more2')
+      @done = true if form.nil?
       page = form.submit if form # No form on the last page
 
     end
