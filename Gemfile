@@ -10,3 +10,5 @@ gem 'mysql'
 gem 'kaminari'
 gem 'jquery-rails', '>= 1.0.12'
 
+gem 'pry'
+

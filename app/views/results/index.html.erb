@@ -37,29 +37,47 @@
       <%= submit_tag "Search", :name => nil %>
   <% end %>
 </div>
-<%= paginate @results %>
-<table cellpadding="0" cellspacing="1" class="db_table">
-  <tr>
-    <th>Ref code</th>
-    <% fields_ids = [] %>
-    <% @site.xpaths.each do |x| %>
-        <% unless x.available_field.field_name == "html" || x.available_field.field_name == "ref_code" || x.show_in_index == 0 %>
-            <% fields_ids.push x.id %>
-            <th><%= x.available_field.field_name %></th>
-        <% end %>
-    <% end %>
-    <th>Time crawled</th>
-    <th colspan="2">Actions</th>
-  </tr>
 
-  <% @results.each do |result| %>
-      <% fields = Result.fields_as_hash(result.result_fields) %>
-      <tr class="data_row">
-        <td><%= link_to result.ref_code, site_result_path(@site, result) %></td>
-        <% fields_ids.each do |field_id| %>
-            <td><%= truncate fields[field_id], :length => 150, :separator => ' ' %></td>
+
+
+
+<table class='db_table', cellpadding='0' cellspacing='1'>
+
+  <thead>
+    <tr id='table-header'>
+
+      <th data-header="ref_code" class='accept'>
+        <div class="dragtable-drag-handle"> Ref Code </div>
+      </th>
+
+      <% @site.column_names.each do |column| %>
+        <th data-header="<%= column %>" class='accept'>
+          <div class="dragtable-drag-handle"><%= column.to_s.humanize %></div>
+        </th>
+      <% end %>
+
+      <th data-header="time_crawled" class='accept'>
+        <div class="dragtable-drag-handle"> Time Crawled </div>
+      </th>
+
+      <th colspan="2"> <div class='dragtable-drag-handle'></div> Actions </th>
+
+
+    </tr>
+  </thead>
+
+  <tbody>
+
+    <% @results.each do |result| %>
+      <tr class='data_row'>
+
+        <td> <%= link_to result.ref_code, site_result_path(@site, result) %> </td>
+
+        <% @site.xpaths.in_index.each do |xpath| %>
+          <td> <%= truncate result.to_hash[ xpath.id ], :length => 150, :separator => ' ' %></td>
         <% end %>
-        <td><%= result.time_crawled %></td>
+
+        <td> <%= result.time_crawled %> </td>
         <td>
           <div id="button_result_<%= result.id %>" class="button_16" title="<%= t "hints.gears_button" %>"></div>
           <script>menus["button_result_<%= result.id %>"] = {
@@ -70,8 +88,19 @@
           };
           </script>
         </td>
-        <td><%= link_to image_tag('destroy.png', :border=>0), result_path(result)+"?site_id=#{@site.id}", :confirm => 'Are you sure?', :method => :delete, :title=>"Delete" %></td>
+
+
+        <td><%= link_to image_tag('destroy.png', :border=>0),
+          result_path(result)+"?site_id=#{@site.id}",
+          :confirm => 'Are you sure?',
+          :method => :delete,
+          :title=>"Delete" %>
+        </td>
+
       </tr>
-  <% end %>
+    <% end %>
+
+  </tbody>
+
 </table>
-<%= paginate @results %>
+

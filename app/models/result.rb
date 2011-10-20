@@ -1,14 +1,20 @@
 class Result < ActiveRecord::Base
   belongs_to :site
   has_many :result_fields
+
   accepts_nested_attributes_for :result_fields
 
   def self.fields_as_hash(fields)
-    ret = {}
-    fields.each do |f|
-      ret[f.xpath.id] = f.value
-    end
-    return ret
+    Hash[ fields.map { |field| [field.xpath.id, field.value] } ]
+    # ret = {}
+    # fields.each do |f|
+    #   ret[f.xpath.id] = f.value
+    # end
+    # return ret
+  end
+
+  def to_hash
+    Hash[ result_fields.map { |field| [field.xpath.id, field.value] } ]
   end
 
   def self.search(params)

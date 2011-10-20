@@ -20,7 +20,13 @@ $(document).ready(function() {
 
         runSiteRowUpdater();
     });
+
+    $('.db_table').dragtable( {
+      dragaccept: '.accept',
+      dragHandle: '.dragtable-drag-handle'
+    } );
 });
+
 function showFlash() {
     $(".flash").toggle("drop", 300, function() {
         setTimeout('$(".flash").fadeOut(700);', 5000)

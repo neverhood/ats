@@ -1,8 +1,11 @@
 class Site < ActiveRecord::Base
+
   belongs_to :parser
   belongs_to :login
+
   has_many :results, :dependent => :delete_all
   has_many :xpaths, :dependent => :delete_all, :order => :pos
+
   validates_presence_of :title
   validates_presence_of :status
   validates_presence_of :parser_id
@@ -12,4 +15,14 @@ class Site < ActiveRecord::Base
     ret = sites.map { |j| [j.title, j.id] }
     return ret
   end
+
+
+  def column_names
+    xpaths.in_index.map { |xpath| xpath.available_field.field_name.downcase.
+        split(' ').
+        join('_').
+        to_sym
+    }
+  end
+
 end

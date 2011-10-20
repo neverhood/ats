@@ -10,6 +10,8 @@ class Xpath < ActiveRecord::Base
   validates_numericality_of :show_in_full, :greater_than_or_equal_to => 0, :less_than_or_equal_to => 1
   validates_numericality_of :pos
 
+  scope :in_index, where(:show_in_index => true)
+
   def self.fields_as_hash(site)
     ret = {}
     site.xpath.each do |x|
