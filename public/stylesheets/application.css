@@ -217,6 +217,41 @@ td {
     background: url(../images/arrow-up.png) no-repeat right bottom;
 }
 
+/* DRAG AND DROP */
+div.column-header {
+    cursor:pointer;
+    background-color:#f0ffff;
+    font: bold 10px "Trebuchet MS",Verdana,Arial,Helvetica,sans-serif;
+    letter-spacing: 2px;
+    padding: 6px 6px 6px 12px;
+    text-align: left;
+    color: black;
+}
+
+div.column-header:hover {
+    background-color:#4e8589;
+    color:#f5f5f5;
+}
+div.available-columns-wrapper {
+    float:left;
+}
+div.selected-columns-wrapper {
+    float:left;
+    margin-left:50px;
+}
+div#available-columns {
+    width:300px;
+    height:250px;
+    border:1px dotted gray;
+}
+div#selected-columns {
+    width:300px;
+    height:250px;
+    border:1px dotted gray;
+}
+/* DRAG AND DROP END */
+
+
 td.site_status {
 
 }

@@ -1,3 +1,5 @@
+// Quick (yet pretty much solid) sorting feature
+
 jQuery.fn.sortElements = (function(){
 
     var sort = [].sort;
@@ -56,6 +58,13 @@ Array.prototype.equals = function(array) {
     return result;
 };
 
+function invert( object ) {
+    var inverted = {};
+
+    for ( var key in object ) inverted[ object[key] ] = key;
+    return inverted;
+}
+
 var menus = {};
 function redirect(href) {
     return  function() {
@@ -82,15 +91,160 @@ $(document).ready(function() {
     // API
 
     $.api = {
-        utils: {},
-        latestSort: ''
+        columnsMapping: {
+            straight: {},
+            inverted: {}
+        },
+        latestSort: '',
+        utils: {
+
+            // tableColumn returns an object with #header and #elements properties, representing the entire column
+            tableColumn: function( header ) {
+                var table = $('.db_table'),
+                    columnNumber,
+                    columnElements = [],
+                    columnHeader;
+
+                $.each( table.find('th'), function(index, element) {
+                    if ( $(element).attr('data-header') == header ) {
+                        columnNumber = index + 1;
+                        columnHeader = $(element);
+                    }
+                });
+
+                if ( columnHeader ) {
+                    columnElements = table.find('td:nth-child(' + columnNumber + ')');
+                    return { header: columnHeader, elements: columnElements };
+                } else { // Report has been generated without this column
+                    return null;
+                }
+            },
+
+            includedReportColumns: function() {
+                var columns = [];
+
+                $.each( $('#selected-columns div.column-header'), function() {
+                    var header = $.api.columnsMapping.inverted[ $(this).attr('id') ];
+                    columns.push( $.api.utils.tableColumn( header ) );
+                });
+                return columns;
+            },
+
+            hideColumn: function( column ) {
+                column.header.hide();
+                column.elements.hide();
+            },
+
+            showColumn: function( column ) {
+                column.header.show();
+                column.elements.show();
+            },
+
+            rebuildTable: function( order ) {
+                var reportRows = $('table.db_table tr').toArray(),
+                    columns = $.api.utils.includedReportColumns();
+
+                reportRows.shift(); // Remove header
+
+                $.each( columns.reverse(), function() {
+
+                    if ( !this.header.is(':visible') ) $.api.utils.showColumn(this);
+
+                    $('table.db_table #table-header').prepend( this.header );
+                    var elements = this.elements.toArray();
+
+                    $.each( reportRows, function() {
+                        $(this).prepend( elements.shift() );
+                    });
+                });
+            }
+        }
     };
 
-    // Drag`n`drop
+// Drag`n`drop
 
-    $('table.db_table').dragtable( {
-        dragHandle: '.dragtable-drag-handle'
-    } );
+    if ( $('table.db_table').length ) {
+        var table = $('table.db_table');
+        var columnsOrder = $.map( table.find('th'), function(element) {
+            return $(element).attr('data-header')
+        });
+
+        $.each( columnsOrder, function( index, id ) {
+            var columnIndex = index + 1;
+            $.api.columnsMapping.straight[ id ] = 'column-' + columnIndex;
+        });
+
+        $.api.columnsMapping.inverted = invert( $.api.columnsMapping.straight );
+    }
+
+    $.api.utils.dragtableHandler = {
+        handle: '.drag-handle',
+        change: function() {
+            var columnsOrder = $(this).dragtable('order').slice(0,-1),
+                selectedColumns = $('div#selected-columns');
+
+            $.each( columnsOrder.reverse(), function(index, id)  {
+                var selector = 'div#' + $.api.columnsMapping.straight[ id ];
+
+                $('#selected-columns').
+                    prepend( selectedColumns.find( selector ) );
+            });
+        }
+    };
+
+    $('.db_table').dragtable( $.api.utils.dragtableHandler );
+
+//    $('div#selected-columns').bind('sortupdate', function(event, ui) {
+//        var $this = $(this),
+//            column = ui.item.text().trim(),
+//            sender = $('#' + ui.item.data('dragged-from'));
+//
+//        if ( sender.attr('id') == 'selected-columns' && ui.item.parent().attr('id') == 'available-columns' ) {
+//            hideColumn( reportColumn(ui.item) )
+//        } else {
+//
+//            if ( reportColumn( ui.item ) ) {
+//                rebuildTable();
+//            } else {
+//                $.reporting.utils.serializeFields();
+//                $('form#new_report').submit();
+//            }
+//
+//        }
+//
+//    });
+
+    $('div#selected-columns, div#available-columns').sortable({
+        connectWith: '.connectedSortable',
+        start: function(event, ui) {
+            ui.item.data('dragged-from', ui.item.parent().attr('id') );
+        },
+        update: function(event, ui) {
+            var column = ui.item.text().trim(),
+                sender = $('#' + ui.item.data('dragged-from')),
+                columnHeader = $.api.columnsMapping.inverted[ ui.item.attr('id') ];
+
+            // user wants column to be excluded
+            if ( sender.attr('id') == 'selected-columns' && ui.item.parent().attr('id') == 'available-columns' ) {
+                $.api.utils.hideColumn( $.api.utils.tableColumn( columnHeader ) );
+            } else {
+                // user wants column to be included or changes the columns order
+
+                if ( $.api.utils.tableColumn( columnHeader ) ) {
+                    var currentOrder = $.map( $('div#selected-columns .column-header'), function(element) {
+                        return $.api.columnsMapping.inverted[ $(element).attr('id') ]
+                    });
+                    //currentOrder.push(' Actions ');
+                    //$('table.db_table').dragtable('order', currentOrder);
+                    $.api.utils.rebuildTable( currentOrder );
+
+                } else {
+                    // Table has been built without this column, going to get info from server
+                    console.log(' implement an ajax ')
+                }
+            }
+        }
+    }).disableSelection();
 
     $('table.db_table th').live('click', function() {
         var table = $('table.db_table'),
@@ -109,9 +263,16 @@ $(document).ready(function() {
                 return $(this).index() === thIndex;
             }).sortElements(function(a, b) {
 
-                    return $.text([a]) > $.text([b]) ?
-                        inverse ? -1 : 1
-                        : inverse ? 1 : -1;
+                    if ( !/(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} UTC)/.test(a.innerText) && parseInt(a.innerText) && parseInt(b.innerText) ) {
+
+                        return parseInt(a.innerText) > parseInt(b.innerText) ?
+                            inverse ? -1 : 1
+                            : inverse ? 1 : -1;
+                    } else {
+                        return $.text([a]) > $.text([b]) ?
+                            inverse ? -1 : 1
+                            : inverse ? 1 : -1;
+                    }
 
                 }, function() {
                     return this.parentNode;
