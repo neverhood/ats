@@ -25,4 +25,8 @@ class Site < ActiveRecord::Base
     }
   end
 
+  def default_columns_order
+    [:ref_code] + column_names + [:crawled_time]
+  end
+
 end

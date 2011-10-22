@@ -140,7 +140,7 @@ $(document).ready(function() {
                 column.elements.show();
             },
 
-            rebuildTable: function( order ) {
+            rebuildTable: function() {
                 var reportRows = $('table.db_table tr').toArray(),
                     columns = $.api.utils.includedReportColumns();
 
@@ -194,26 +194,6 @@ $(document).ready(function() {
 
     $('.db_table').dragtable( $.api.utils.dragtableHandler );
 
-//    $('div#selected-columns').bind('sortupdate', function(event, ui) {
-//        var $this = $(this),
-//            column = ui.item.text().trim(),
-//            sender = $('#' + ui.item.data('dragged-from'));
-//
-//        if ( sender.attr('id') == 'selected-columns' && ui.item.parent().attr('id') == 'available-columns' ) {
-//            hideColumn( reportColumn(ui.item) )
-//        } else {
-//
-//            if ( reportColumn( ui.item ) ) {
-//                rebuildTable();
-//            } else {
-//                $.reporting.utils.serializeFields();
-//                $('form#new_report').submit();
-//            }
-//
-//        }
-//
-//    });
-
     $('div#selected-columns, div#available-columns').sortable({
         connectWith: '.connectedSortable',
         start: function(event, ui) {
@@ -231,13 +211,7 @@ $(document).ready(function() {
                 // user wants column to be included or changes the columns order
 
                 if ( $.api.utils.tableColumn( columnHeader ) ) {
-                    var currentOrder = $.map( $('div#selected-columns .column-header'), function(element) {
-                        return $.api.columnsMapping.inverted[ $(element).attr('id') ]
-                    });
-                    //currentOrder.push(' Actions ');
-                    //$('table.db_table').dragtable('order', currentOrder);
-                    $.api.utils.rebuildTable( currentOrder );
-
+                    $.api.utils.rebuildTable();
                 } else {
                     // Table has been built without this column, going to get info from server
                     console.log(' implement an ajax ')
@@ -312,8 +286,8 @@ function setupContextMenus() {
         /** @namespace menuData.items */
         for (var j = 0; j < menuData.items.length; j++) {
             var itemData = menuData.items[j];
-            var menuLabel = itemData.label
-            var menuIcon = "/images/" + menuLabel.toLowerCase().replace(" ", "_") + ".png"
+            var menuLabel = itemData.label;
+            var menuIcon = "/images/" + menuLabel.toLowerCase().replace(" ", "_") + ".png";
             menuItem[menuLabel ] = {  onclick:redirect(itemData.href), icon:menuIcon};
             menu.push(menuItem);
             menuItem = {};

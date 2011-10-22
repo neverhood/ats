@@ -72,23 +72,13 @@
   <thead>
   <tr id='table-header'>
 
-    <th data-header="ref_code" class='accept'>
-      <span class="drag-handle"> Ref Code </span>
-    </th>
-
-    <% @site.column_names.each do |column| %>
+    <% @site.default_columns_order.each do |column| %>
         <th data-header="<%= column %>" class='accept'>
           <span class="drag-handle"><%= column.to_s.humanize %></span>
         </th>
     <% end %>
 
-    <th data-header="time_crawled" class='accept'>
-      <span class="drag-handle"> Time Crawled </span>
-    </th>
-
     <th colspan="2"> <div class='drag-handle'></div> Actions </th>
-
-
   </tr>
   </thead>
 
@@ -117,7 +107,7 @@
 
 
         <td><%= link_to image_tag('destroy.png', :border=>0),
-                        result_path(result)+"?site_id=#{@site.id}",
+                        result_path(result, :site_id => @site.id),
                         :confirm => 'Are you sure?',
                         :method => :delete,
                         :title=>"Delete" %>
