@@ -41,23 +41,23 @@
 
 
 
-<table class='db_table', cellpadding='0' cellspacing='1'>
+<table class='db_table' cellpadding='0' cellspacing='1'>
 
   <thead>
     <tr id='table-header'>
 
       <th data-header="ref_code" class='accept'>
-        <div class="dragtable-drag-handle"> Ref Code </div>
+        <span class="dragtable-drag-handle"> Ref Code </span>
       </th>
 
       <% @site.column_names.each do |column| %>
         <th data-header="<%= column %>" class='accept'>
-          <div class="dragtable-drag-handle"><%= column.to_s.humanize %></div>
+          <span class="dragtable-drag-handle"><%= column.to_s.humanize %></span>
         </th>
       <% end %>
 
       <th data-header="time_crawled" class='accept'>
-        <div class="dragtable-drag-handle"> Time Crawled </div>
+        <span class="dragtable-drag-handle"> Time Crawled </span>
       </th>
 
       <th colspan="2"> <div class='dragtable-drag-handle'></div> Actions </th>

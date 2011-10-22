@@ -1,3 +1,61 @@
+jQuery.fn.sortElements = (function(){
+
+    var sort = [].sort;
+
+    return function(comparator, getSortable) {
+
+        getSortable = getSortable || function(){return this;};
+
+        var placements = this.map(function(){
+
+            var sortElement = getSortable.call(this),
+                parentNode = sortElement.parentNode,
+
+                nextSibling = parentNode.insertBefore(
+                    document.createTextNode(''),
+                    sortElement.nextSibling
+                );
+
+            return function() {
+
+                if (parentNode === this) {
+                    throw new Error(
+                        "You can't sort elements if any one is a descendant of another."
+                    );
+                }
+
+                parentNode.insertBefore(this, nextSibling);
+                parentNode.removeChild(nextSibling);
+
+            };
+
+        });
+
+        return sort.call(this, comparator).each(function(i){
+            placements[i].call(getSortable.call(this));
+        });
+
+    };
+
+})();
+
+String.prototype.trim = function() {
+    return this.replace(/^\s+|\s+$/g,"");
+};
+
+Array.prototype.equals = function(array) {
+    var result = true;
+
+    for ( element in this ) {
+        if ( this[element] != array[element] ) {
+            result = false;
+            break;
+        }
+    }
+
+    return result;
+};
+
 var menus = {};
 function redirect(href) {
     return  function() {
@@ -21,10 +79,55 @@ $(document).ready(function() {
         runSiteRowUpdater();
     });
 
-    $('.db_table').dragtable( {
-      dragaccept: '.accept',
-      dragHandle: '.dragtable-drag-handle'
+    // API
+
+    $.api = {
+        utils: {},
+        latestSort: ''
+    };
+
+    // Drag`n`drop
+
+    $('table.db_table').dragtable( {
+        dragHandle: '.dragtable-drag-handle'
     } );
+
+    $('table.db_table th').live('click', function() {
+        var table = $('table.db_table'),
+            $this = $(this),
+            thIndex = $this.index(),
+            inverse;
+
+        if ( $(this).hasClass('accept') ) {
+            if ( $.api.latestSort == $this.attr('data-header') ) {
+                inverse = !$this.data('inverse');
+            } else {
+                inverse = false;
+            }
+
+            table.find('td').filter(function() {
+                return $(this).index() === thIndex;
+            }).sortElements(function(a, b) {
+
+                    return $.text([a]) > $.text([b]) ?
+                        inverse ? -1 : 1
+                        : inverse ? 1 : -1;
+
+                }, function() {
+                    return this.parentNode;
+                });
+
+            $this.data('inverse', inverse);
+//
+//        $('#report_order_by').val( $this.attr('abbr') );
+//        $('#report_order_type').val( inverse? 'desc' : 'asc' );
+//
+            $('table.db_table th').removeClass('desc asc');
+            $this.addClass( inverse? 'desc' : 'asc' );
+
+            $.api.latestSort = $this.attr('data-header');
+        }
+    });
 });
 
 function showFlash() {
@@ -127,6 +230,6 @@ function kill($el) {
 
 }
 function reenableRunButton() {
-   var input = $("#site_status").val("idle");
+    var input = $("#site_status").val("idle");
     dbg(input.length, "ST")
 }

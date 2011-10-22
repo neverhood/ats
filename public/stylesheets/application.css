@@ -209,6 +209,14 @@ td {
     background-color: #f5f5dc;
 }
 
+.db_table th.desc {
+    background: url(../images/arrow-down.png) no-repeat right bottom;
+}
+
+.db_table th.asc {
+    background: url(../images/arrow-up.png) no-repeat right bottom;
+}
+
 td.site_status {
 
 }
