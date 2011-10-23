@@ -18,6 +18,9 @@ Www::Application.routes.draw do
   match '/sites/:id/row' =>'sites#site_row'
   match '/sites/:id/copy' =>'sites#copy'
 
+
+  match '/sites/:id/results/customize' => 'results#customize', :as => :customize_results
+
   resources :parsers do
     resources :available_fields
   end

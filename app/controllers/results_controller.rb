@@ -1,11 +1,13 @@
 class ResultsController < ApplicationController
 
+  before_filter :arrange_customizations, :only => :customize
 
   # GET /results
   # GET /results.xml
   def index
-    @results = Result.search(params).page(params[:page])
+    # @results = Result.search(params).page(params[:page])
     set_site
+    @results = Result.for(@site).order('`time_crawled` DESC').page(params[:page])
     respond_to do |format|
       format.html # index.html.erb
       format.xml { render :xml => @results }
@@ -22,6 +24,19 @@ class ResultsController < ApplicationController
       format.xml { render :xml => @result }
     end
   end
+
+
+
+  def customize
+    @results = Result.select(@fields_to_select).
+        from(@site.results_view).
+        order(@order).
+        page(@page)
+
+    render :json => { :table => render_to_string(:partial => 'table') }
+  end
+
+
 
   def html
     @result = Result.find(params[:id])
@@ -87,5 +102,17 @@ class ResultsController < ApplicationController
       format.html { redirect_to(site_results_url(@site)) }
       format.xml { head :ok }
     end
+  end
+
+  private
+
+  def arrange_customizations
+    customizations = params[:results]
+    @fields = customizations[:fields].split(',')
+    @fields_to_select = (@fields + Result::PRESELECTED_FIELDS).
+        map { |field| "`results`.`#{field}`" }
+    @site = Site.find(customizations[:site_id])
+    @order = "`#{customizations[:order][:by]}`" + ' ' + customizations[:order][:direction]
+    @page = params[:results][:page]
   end
 end

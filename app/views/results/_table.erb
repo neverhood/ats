@@ -1,0 +1,49 @@
+<table class='db_table' cellpadding='0' cellspacing='1'>
+
+  <tbody>
+
+  <tr id='table-header'>
+
+    <% (@fields || @site.default_columns_order).each do |column| %>
+        <th data-header="<%= column %>" class='accept'>
+          <span class="drag-handle"><%= column.to_s.humanize %></span>
+        </th>
+    <% end %>
+
+    <th class='nosort'> Actions </th>
+  </tr>
+
+  <% @results.each do |result| %>
+      <tr class='data_row'>
+
+        <% (@fields || @site.default_columns_order).each do |column| %>
+            <% if column == :ref_code %>
+                <td> <%= link_to result.ref_code, site_result_path(@site, :id => result.id) %> </td>
+            <% else %>
+                <td> <%= truncate result.send(column).to_s, :length => 150, :separator => ' ' %> </td>
+            <% end %>
+        <% end %>
+
+        <td>
+          <div id="button_result_<%= result.id %>" class="button_16" title="<%= t "hints.gears_button" %>"></div>
+          <script>menus["button_result_<%= result.id %>"] = {
+              items:[
+                  {label:"Show", href:"<%= site_result_path(@site, :id => result.id) %>" },
+                  //{label:"Edit", href:"<%= edit_site_result_path  @site,result %>" }
+              ]
+          };
+          </script>
+          <%= link_to image_tag('destroy.png', :border=>0),
+                        result_path(result, :site_id => @site.id),
+                        :confirm => 'Are you sure?',
+                        :method => :delete,
+                        :title=>"Delete" %>
+        </td>
+
+      </tr>
+  <% end %>
+
+
+  </tbody>
+
+</table>

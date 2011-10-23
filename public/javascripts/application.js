@@ -140,6 +140,18 @@ $(document).ready(function() {
                 column.elements.show();
             },
 
+            tableColumnsOrder: function() {
+                return $.map( $('.db_table th'), function(element) {
+                    return $(element).attr('data-header');
+                })
+            },
+
+            tableVisibleColumnsOrder: function() {
+                return $.map( $('div#selected-columns .column-header'), function(element) {
+                    return $.api.columnsMapping.inverted[ $(element).attr('id') ];
+                })
+            },
+
             rebuildTable: function() {
                 var reportRows = $('table.db_table tr').toArray(),
                     columns = $.api.utils.includedReportColumns();
@@ -164,10 +176,8 @@ $(document).ready(function() {
 // Drag`n`drop
 
     if ( $('table.db_table').length ) {
-        var table = $('table.db_table');
-        var columnsOrder = $.map( table.find('th'), function(element) {
-            return $(element).attr('data-header')
-        });
+        var table = $('table.db_table'),
+            columnsOrder = $.api.utils.tableColumnsOrder();
 
         $.each( columnsOrder, function( index, id ) {
             var columnIndex = index + 1;
@@ -177,10 +187,13 @@ $(document).ready(function() {
         $.api.columnsMapping.inverted = invert( $.api.columnsMapping.straight );
     }
 
-    $.api.utils.dragtableHandler = {
+    $.api.utils.sortTableHandler = {
+        helperCells: null,
+        items: '>:not(.nosort)',
+        placeholder: 'placeholder',
         handle: '.drag-handle',
-        change: function() {
-            var columnsOrder = $(this).dragtable('order').slice(0,-1),
+        stop: function() {
+            var columnsOrder =  $.api.utils.tableColumnsOrder(),
                 selectedColumns = $('div#selected-columns');
 
             $.each( columnsOrder.reverse(), function(index, id)  {
@@ -192,7 +205,8 @@ $(document).ready(function() {
         }
     };
 
-    $('.db_table').dragtable( $.api.utils.dragtableHandler );
+    $('.db_table').sorttable( $.api.utils.sortTableHandler );
+    $('.db_table th').disableSelection();
 
     $('div#selected-columns, div#available-columns').sortable({
         connectWith: '.connectedSortable',
@@ -253,16 +267,27 @@ $(document).ready(function() {
                 });
 
             $this.data('inverse', inverse);
-//
-//        $('#report_order_by').val( $this.attr('abbr') );
-//        $('#report_order_type').val( inverse? 'desc' : 'asc' );
-//
+
+        $('#results_order_by').val( $this.attr('data-header') );
+        $('#results_order_direction').val( inverse? 'desc' : 'asc' );
+
             $('table.db_table th').removeClass('desc asc');
             $this.addClass( inverse? 'desc' : 'asc' );
 
             $.api.latestSort = $this.attr('data-header');
         }
     });
+
+
+    $('form#customize-table').bind('submit', function() {
+        $('#results_fields').val( $.api.utils.tableVisibleColumnsOrder().join(',') );
+    }).
+        bind('ajax:complete', function(event, xhr, status) {
+            if ( status == 'success' ) {
+                $('#db-table-placeholder').html( $.parseJSON(xhr.responseText).table );
+            }
+        });
+
 });
 
 function showFlash() {

@@ -156,14 +156,16 @@
 	        		      var row2 = self._getCells(self.element[0],i+1);
                 }
 
+                                console.log( row2);
                 if ( $(row2.array[0]).attr( self.options.dataHeader ) ) {
 								    self._swapCol(self.startIndex+1);
 								    self._eventHelper('change',e);
+                                self.prevMouseX = e.pageX;
                 }
 							}
 						}
 						//update mouse position
-						self.prevMouseX = e.pageX;
+						//self.prevMouseX = e.pageX;
 						
                     
                     
