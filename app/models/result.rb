@@ -2,7 +2,8 @@ class Result < ActiveRecord::Base
   belongs_to :site
   has_many :result_fields
 
-  PRESELECTED_FIELDS = [:id, :link]
+  PRESELECTED_FIELDS = [ :id, :link ]
+  FILTER_TYPES = [ :is_null, :is_not_null, :starts_with, :ends_with, :contains ]
 
   accepts_nested_attributes_for :result_fields
 

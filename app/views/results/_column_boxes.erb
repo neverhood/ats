@@ -1,0 +1,17 @@
+<div class="available-columns-wrapper">
+  <h3>Excluded columns</h3>
+  <div id='available-columns' class='connectedSortable'></div>
+</div>
+
+<div class="available-columns-wrapper">
+  <h3>Selected columns</h3>
+  <div id='selected-columns' class='connectedSortable'>
+
+    <% @site.default_columns_order.each_with_index do |column, index| %>
+        <div class='column-header' id='column-<%= index + 1%>'>
+          <%= column.to_s.humanize %>
+        </div>
+    <% end  %>
+
+  </div>
+</div>

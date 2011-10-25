@@ -1,0 +1,42 @@
+<div id='table-customizations'>
+
+  <%= form_for :results, :url => customize_results_path(@site),
+               :remote => true,
+               :html => { :id => 'customize-table' }  do |form| %>
+
+      <%= form.hidden_field :site_id, :value => @site.id %>
+      <%= form.hidden_field :fields, :value => (@site.default_columns_order) %>
+      <%= form.hidden_field :page, :value => (params[:page] || 1) %>
+
+      <h3> Filters </h3>
+
+      <div id='filters'>
+        <a class='button add-new-filter'> Add New Filter </a>
+      </div>
+
+      <div id='active-filters'>
+
+        <div class='filter'>
+          <select class='column'>
+            <%= options_for_select(@site.default_columns_order.map { |filter| [filter,filter] } ) %>
+          </select>
+          <select class='type'>
+            <%= options_for_select(Result::FILTER_TYPES.map { |filter| [filter,filter] } ) %>
+          </select>
+        </div>
+
+      </div>
+
+      <h3> Order </h3>
+
+      <div id='order'>
+        <%= form.fields_for :order do |order_fields| %>
+            <%= order_fields.select :by, (@fields || @site.default_columns_order).map { |field| [field,field] } %>
+            <%= order_fields.select :direction, [:asc, :desc].map { |direction| [direction, direction] } %>
+        <% end %>
+      </div>
+
+      <%= form.submit(:submit) %>
+  <% end %>
+
+</div>
