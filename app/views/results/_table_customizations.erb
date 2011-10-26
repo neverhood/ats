@@ -23,6 +23,8 @@
           <select class='type'>
             <%= options_for_select(Result::FILTER_TYPES.map { |filter| [filter,filter] } ) %>
           </select>
+          <input type='text' class='value hidden' />
+          <strong class='remove-filter'></strong>
         </div>
 
       </div>

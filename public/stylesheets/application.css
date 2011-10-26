@@ -95,6 +95,8 @@ h1, h2, h3 {
     background-image: url("/images/tools_16.png");
 }
 
+.hidden { display: none }
+
 .crud_button {
     background: none no-repeat scroll 8px 8px #F5F5DC;
     border-radius: 2px 2px 2px 2px;
@@ -370,6 +372,17 @@ span.site_status {
     margin-bottom: 1em;
     font-size: 10px;
 
+}
+
+strong.remove-filter {
+  cursor:pointer;
+    /*YG*/
+  background-image: url("../images/destroy.png");
+  margin-left:6px;
+  height: 16px;
+  width: 16px;
+  display:inline-block;
+  float:none;
 }
 
 #filter input {

@@ -33,8 +33,8 @@ class ResultsController < ApplicationController
         order(@order).
         page(@page)
 
-    # render :json => { :table => render_to_string(:partial => 'table') }
-    render :js => " alert('#{params}') "
+    render :json => { :table => render_to_string(:partial => 'table') }
+    #render :js => " alert('#{params}') "
   end
 
 
