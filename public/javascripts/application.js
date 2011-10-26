@@ -176,7 +176,7 @@ $(document).ready(function() {
 
                 filter.find('.column').val('ref_code');
                 filter.find('.type').val('is_null');
-                filter.find('.value').addClass('hidden').val('');
+                filter.find('.value').hide().val('');
 
                 return filter;
            }
@@ -300,7 +300,7 @@ $(document).ready(function() {
 
         // * Filters *
 
-    $('div.filter .type').change(function() {
+    $('div.filter .type').live('change', function() {
         var filterValueField = $(this).parents('div.filter').find('.value');
 
         if ( this.value == 'is_null' || this.value == 'is_not_null' ) {
