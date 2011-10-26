@@ -236,7 +236,7 @@ a.button {
     cursor: pointer;
 }
 
-.add-new-filter {
+#add-new-filter {
     background: url(../images/add.png) beige no-repeat left;
     float: none;
 }

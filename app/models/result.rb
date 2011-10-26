@@ -3,7 +3,7 @@ class Result < ActiveRecord::Base
   has_many :result_fields
 
   PRESELECTED_FIELDS = [ :id, :link ]
-  FILTER_TYPES = [ :is_null, :is_not_null, :starts_with, :ends_with, :contains ]
+  FILTER_TYPES = [ :is_null, :is_not_null, :starts_with, :ends_with, :contains, :equals ]
 
   accepts_nested_attributes_for :result_fields
 

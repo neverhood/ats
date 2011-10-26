@@ -169,7 +169,17 @@ $(document).ready(function() {
                         $(this).prepend( elements.shift() );
                     });
                 });
-            }
+            },
+
+            buildDummyFilter: function() {
+                var filter = $('div.filter').first().clone();
+
+                filter.find('.column').val('ref_code');
+                filter.find('.type').val('is_null');
+                filter.find('.value').addClass('hidden').val('');
+
+                return filter;
+           }
         }
     };
 
@@ -287,6 +297,37 @@ $(document).ready(function() {
                 $('#db-table-placeholder').html( $.parseJSON(xhr.responseText).table );
             }
         });
+
+        // * Filters *
+
+    $('div.filter .type').change(function() {
+        var filterValueField = $(this).parents('div.filter').find('.value');
+
+        if ( this.value == 'is_null' || this.value == 'is_not_null' ) {
+            filterValueField.val('').hide();
+        } else {
+            filterValueField.show();
+        }
+    });
+
+    $('#add-new-filter').click(function() {
+        if ( $('#active-filters div.filter:visible').length > 0 ) {
+            var newFilter = $.api.utils.buildDummyFilter();
+
+            $('#active-filters').append( newFilter );
+        } else {
+            $('div.filter').show();
+        }
+    });
+
+    $('.remove-filter').live('click', function() {
+        var newFilter = $.api.utils.buildDummyFilter();
+        $(this).parents('div.filter').remove();
+
+        if ( $('div.filter').length == 0 ) {
+            $('#active-filters').append( newFilter.hide() );
+        }
+    });
 
 });
 
