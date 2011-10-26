@@ -22,7 +22,7 @@ class Site < ActiveRecord::Base
         split(' ').
         join('_').
         to_sym
-    } - [:html]
+    } - [:html, :ref_code]
   end
 
   def default_columns_order
@@ -34,7 +34,8 @@ class Site < ActiveRecord::Base
 
     available_fields = Hash[
         xpaths.map { |xpath| [ xpath.id, xpath.available_field.field_name.downcase.split(' ').join('_').to_sym ] }.
-            reject { |key, value| value == :html }
+            reject { |key, value| value == :html }.
+            reject { |key, value| value == :ref_code }
     ]
 
     xpath_ids = xpaths.map(&:id).reject { |xpath_id| !available_fields[xpath_id] }
