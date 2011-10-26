@@ -30,11 +30,17 @@ class ResultsController < ApplicationController
   def customize
     @results = Result.select(@fields_to_select).
         from(@site.results_view).
-        order(@order).
-        page(@page)
+        where(@filters).
+        order(@order)
 
-    render :json => { :table => render_to_string(:partial => 'table') }
-    #render :js => " alert('#{params}') "
+    @results = request.xhr?? @results.page(@page) : @results.all
+
+    respond_to do |format|
+      format.json { render :json => {:table => render_to_string(:partial => 'table')}, :layout => false }
+      format.html { send_data Result.to_csv(@results, @fields), :type => 'text/csv',
+                              :filename => "#{@site.title}_report_#{Time.now.strftime("%d-%m-%Y")}.csv",
+                              :disposition => 'attachment' }
+    end
   end
 
 
@@ -114,6 +120,41 @@ class ResultsController < ApplicationController
         map { |field| "`results`.`#{field}`" }
     @site = Site.find(customizations[:site_id])
     @order = "`#{customizations[:order][:by]}`" + ' ' + customizations[:order][:direction]
+    @filters = parse_filters(customizations[:filters]) if customizations[:filters]
     @page = params[:results][:page]
   end
+
+  def parse_filters(filters)
+    # initially, `filters` is a hash, looking like so: { :ref_code => 'is_null', :description => 'starts_with:you gon like this place...' }
+    sql = []
+
+    filters.each do | key, value |
+
+      if [ 'is_null', 'is_not_null' ].include? value
+        sql << Result::FILTER_MAPPINGS[ value.to_sym ].call( key )
+      elsif key == 'time_crawled'
+        # expect the colons (e.g 14:55)
+        values = value.split(':')
+        sql << Result::FILTER_MAPPINGS[ values.first.to_sym ].call( key, values.slice(1, values.length).join(':') )
+      else
+        filter_type, filter_value = value.split(':')
+        sql << Result::FILTER_MAPPINGS[ filter_type.to_sym ].call( key, filter_value )
+      end
+
+    end
+
+    sql.join('AND')
+  end
+
+  #def to_csv(results)
+  #
+  #  if results && results.any?
+  #    @fields.map { |field| "\"#{field}\"" }.join(',') + "\n" +            # Header
+  #        results.map { |result_set| result_set.to_csv }.join("\n")   # Body
+  #  else
+  #    "No data available"
+  #  end
+  #
+  #end
+
 end

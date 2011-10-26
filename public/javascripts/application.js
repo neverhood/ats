@@ -96,9 +96,17 @@ $(document).ready(function() {
             inverted: {}
         },
         latestSort: '',
+        notCombineAbleFilters: {
+            is_null: ['equals', 'starts_with', 'ends_with', 'contains', 'less_than', 'more_than', 'is_not_null'],
+            is_not_null: ['equals', 'starts_with', 'ends_with', 'contains', 'less_than', 'more_than', 'is_null'],
+            starts_with: ['equals', 'is_null', 'is_not_null'],
+            ends_with: ['equals', 'is_null', 'is_not_null'],
+            equals: ['starts_with', 'ends_with', 'less_than', 'more_than', 'contains'],
+            contains: ['is_null', 'is_not_null', 'equals']
+        },
         utils: {
 
-            // tableColumn returns an object with #header and #elements properties, representing the entire column
+            // tableColumn returns an object with #header and #elements attributes, representing the entire column
             tableColumn: function( header ) {
                 var table = $('.db_table'),
                     columnNumber,
@@ -171,15 +179,74 @@ $(document).ready(function() {
                 });
             },
 
-            buildDummyFilter: function() {
-                var filter = $('div.filter').first().clone();
+            dummyFilter: function() {
+                return $('div.filter-dummy').clone().
+                    removeClass('hidden filter-dummy').
+                    addClass('filter'); // Real boy!
+            },
 
-                filter.find('.column').val('ref_code');
-                filter.find('.type').val('is_null');
-                filter.find('.value').hide().val('');
+            serializeFields: function() {
+                $('#results_fields').val( $.api.utils.tableVisibleColumnsOrder().join(',') );
+                return $.api.utils;
+            },
 
-                return filter;
-           }
+            serializeFilters: function() {
+                var filters = $('div.filter'),
+                    fieldFilters = {},
+                    toAry = function(type, value) {
+                        if (value) { return [ type,value ] } else { return [type] }
+                    },
+                    isDuplicatedOrNotCombineAble = function(type) {
+                        var result = true;
+                        $.each(fieldFilters[field], function() {
+                            if ( (this[0] == type) || ($.api.notCombineAbleFilters[this[0]].indexOf(type) != -1) ) {
+                                result = false;
+                            }
+                        });
+                        return result;
+                    };
+
+                $.each(filters, function() {
+                    var filter = $(this),
+                        field = filter.find('.column').val(),
+                        type = filter.find('.type').val(),
+                        value = filter.find('.value').val();
+
+                    if (field in fieldFilters) {
+                        if ( isDuplicatedOrNotCombineAble(type) )  {
+                            fieldFilters[field].push( toAry(type,value) );
+                        }
+                    } else {
+                        fieldFilters[field] = [ toAry(type, value) ];
+                    }
+                });
+
+
+
+                $('#customize-table').find('input[name*="results[filters]"]').remove();
+
+                $.each(fieldFilters, function(field, filters) {
+                    var input = $('<input type="hidden" name="results[filters][' + field + ']" />'),
+                        value = '';
+
+                    $.each(filters, function(index) {
+                        value = value + this.join(':');
+                        if (filters[index + 1]) value = value + ';'
+                    });
+
+                    input.val( value );
+                    $('#customize-table').append(input);
+
+                });
+
+                return $.api.utils;
+            },
+
+            serializeAndSubmit: function() {
+                $.api.utils.serializeFields();
+                $.api.utils.serializeFilters();
+                $('form#customize-table').submit();
+            }
         }
     };
 
@@ -238,7 +305,7 @@ $(document).ready(function() {
                     $.api.utils.rebuildTable();
                 } else {
                     // Table has been built without this column, going to get info from server
-                    console.log(' implement an ajax ')
+                    $.api.utils.serializeAndSubmit();
                 }
             }
         }
@@ -278,8 +345,8 @@ $(document).ready(function() {
 
             $this.data('inverse', inverse);
 
-        $('#results_order_by').val( $this.attr('data-header') );
-        $('#results_order_direction').val( inverse? 'desc' : 'asc' );
+            $('#results_order_by').val( $this.attr('data-header') );
+            $('#results_order_direction').val( inverse? 'desc' : 'asc' );
 
             $('table.db_table th').removeClass('desc asc');
             $this.addClass( inverse? 'desc' : 'asc' );
@@ -289,16 +356,43 @@ $(document).ready(function() {
     });
 
 
+
+    // * Filters *
+
+    // * Order *
+
+    $('select#results_order_by').change(function() {
+        $('table.db_table th').removeClass('desc asc');
+
+        var column = $('table.db_table').find('th[data-header="' + this.value + '"]');
+        column.addClass( $('select#results_order_direction').val() );
+
+        $.api.latestSort = this.value;
+    });
+
+    $('select#results_order_direction').change(function() {
+        var column = $('table.db_table').find('th[data-header="' + $('select#results_order_by').val() + '"]' );
+
+        column.removeClass('desc asc').
+            addClass( this.value );
+    });
+
     $('form#customize-table').bind('submit', function() {
-        $('#results_fields').val( $.api.utils.tableVisibleColumnsOrder().join(',') );
+
+        if ( $('.invalid-filter-value').length > 0 ) {
+            alert('Please remove or populate values for teh empty filters');
+            return false;
+        }
+
+        $.api.utils.serializeFilters().
+            serializeFields();
     }).
         bind('ajax:complete', function(event, xhr, status) {
             if ( status == 'success' ) {
                 $('#db-table-placeholder').html( $.parseJSON(xhr.responseText).table );
+                $('table.db_table').sorttable($.api.utils.sortTableHandler);
             }
         });
-
-        // * Filters *
 
     $('div.filter .type').live('change', function() {
         var filterValueField = $(this).parents('div.filter').find('.value');
@@ -310,23 +404,50 @@ $(document).ready(function() {
         }
     });
 
-    $('#add-new-filter').click(function() {
-        if ( $('#active-filters div.filter:visible').length > 0 ) {
-            var newFilter = $.api.utils.buildDummyFilter();
-
-            $('#active-filters').append( newFilter );
-        } else {
-            $('div.filter').show();
+    $('div.filter .value').live({
+        blur: function() {
+            if ( this.value.trim().length == 0 ) {
+                $(this).addClass('invalid-filter-value');
+            }
+        },
+        focus: function() {
+            $(this).removeClass('invalid-filter-value');
         }
     });
 
-    $('.remove-filter').live('click', function() {
-        var newFilter = $.api.utils.buildDummyFilter();
-        $(this).parents('div.filter').remove();
+    $('#add-new-filter').click(function() {
+        if (! $('#active-filters').is(':visible') ) $('#active-filters').show();
+        $('#active-filters').append( $.api.utils.dummyFilter().show() );
+    });
 
-        if ( $('div.filter').length == 0 ) {
-            $('#active-filters').append( newFilter.hide() );
-        }
+    $('.remove-filter').live('click', function() {
+        $(this).parents('div.filter').remove();
+        if ( $('div.filter').length == 0 ) $('#active-filters').hide();
+    });
+
+
+    // CSV
+
+    $('#download-csv').click(function(event) {
+        event.preventDefault();
+        var form = $('form#customize-table').
+            removeAttr('data-remote'), // Calm down, we'll set it back
+            jqExpando = [];
+
+        // Here goes some dirty, uhm, meaning "dark" magic
+        $.each( form.data(), function(key,val) {
+            if (/jQuery/.test(key)) {
+                jqExpando = [key,val];
+                delete form.data()[key];
+                delete form.data()['remote'];
+            }
+        });
+
+        $.api.utils.serializeAndSubmit();
+
+        form.attr('data-remote', true);
+        form.data( jqExpando[0], jqExpando[1] );
+        return false;
     });
 
 });

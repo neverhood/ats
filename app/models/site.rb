@@ -34,8 +34,7 @@ class Site < ActiveRecord::Base
 
     available_fields = Hash[
         xpaths.map { |xpath| [ xpath.id, xpath.available_field.field_name.downcase.split(' ').join('_').to_sym ] }.
-            reject { |key, value| value == :html }.
-            reject { |key, value| value == :ref_code }
+            reject { |key, value| [:html, :ref_code ].include? value }
     ]
 
     xpath_ids = xpaths.map(&:id).reject { |xpath_id| !available_fields[xpath_id] }

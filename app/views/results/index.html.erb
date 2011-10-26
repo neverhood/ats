@@ -7,36 +7,6 @@
 <%= run_button_for @site, false %>
 <!--/div-->
 <div style="clear:both;"></div>
-<span id="filter_trigger" title="click to open filter">filter:</span><br/><br/>
-<div id="filter">
-  <h2>Filter</h2>
-
-  <div class="form_hint">Filter options are joined with "AND" logic. Use % symbol in text fields as a wildcard (which
-    means 'any number of arbitrary characters')
-  </div>
-  <%= form_tag site_results_path(@site), :method=> 'get' do %>
-      <label title="Ref code starts with">Ref code: <%= text_field_tag :ref_code, params[:ref_code] %></label>
-      <label title="Working title starts with">Working
-        title: <%= text_field_tag :working_title, params[:working_title] %></label>
-      <label title="Location starts with">Location: <%= text_field_tag :location, params[:location] %></label>
-      <label title="Organization name starts with">Organization
-        name: <%= text_field_tag :organization_name, params[:organization_name] %></label><label title="Brief description starts with">Brief
-  description: <%= text_field_tag :brief_description, params[:brief_description] %></label>
-
-      <label title="Time crawled not later than">Time
-        crawled: <%= select_tag :time_span, options_for_select([
-                                                                       ["all", 0],
-                                                                       ["1 day ago", 24],
-                                                                       ["3 days age", 72],
-                                                                       ["last week", 144],
-                                                                       ["last month", 720],
-                                                                       ["last year", 8760]
-                                                               ]) %></label>
-
-      <div style="clear:both;"></div>
-      <%= submit_tag "Search", :name => nil %>
-  <% end %>
-</div>
 
 
 <%= render :partial => 'table_customizations' %>

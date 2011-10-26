@@ -187,6 +187,7 @@ td {
 }
 
 .db_table {
+    clear:both;
     background-color: #e6e6fa;
 }
 
@@ -257,10 +258,12 @@ div.column-header:hover {
 }
 div.available-columns-wrapper {
     float:left;
+    margin-bottom: 20px;
 }
 div.selected-columns-wrapper {
     float:left;
     margin-left:50px;
+    margin-bottom: 20px;
 }
 div#available-columns {
     width:300px;
@@ -375,14 +378,23 @@ span.site_status {
 }
 
 strong.remove-filter {
-  cursor:pointer;
+    cursor:pointer;
     /*YG*/
-  background-image: url("../images/destroy.png");
-  margin-left:6px;
-  height: 16px;
-  width: 16px;
-  display:inline-block;
-  float:none;
+    background-image: url("../images/destroy.png");
+    margin-left:6px;
+    height: 16px;
+    width: 16px;
+    display:inline-block;
+    float:none;
+}
+
+.invalid-filter-value { border: 1px solid red; }
+
+#order, #active-filters {
+    background-color: #B2CFFF;
+    border-radius: 4px;
+    padding: 8px;
+    margin-bottom: 12px;
 }
 
 #filter input {

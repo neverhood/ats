@@ -5,6 +5,15 @@ class Result < ActiveRecord::Base
   PRESELECTED_FIELDS = [ :id, :link ]
   FILTER_TYPES = [ :is_null, :is_not_null, :starts_with, :ends_with, :contains, :equals ]
 
+  FILTER_MAPPINGS = {
+      :is_null => lambda { |column| " `results`.`#{column}` IS NULL " },
+      :is_not_null => lambda { |column| " `results`.`#{column}` IS NOT NULL " },
+      :starts_with => lambda { |column, value| " LOWER(`results`.`#{column}`) LIKE '#{value.downcase}%' " },
+      :ends_with => lambda { |column, value| " LOWER(`results`.`#{column}`) LIKE '%#{value.downcase}' " },
+      :contains => lambda { |column, value| " LOWER(`results`.`#{column}`) LIKE '%#{value.downcase}%' " },
+      :equals => lambda { |column, value| " LOWER(`results`.`#{column}`) = '#{value.downcase}' " }
+  }
+
   accepts_nested_attributes_for :result_fields
 
   attr_accessor :order_direction
@@ -20,8 +29,23 @@ class Result < ActiveRecord::Base
     # return ret
   end
 
+  def self.to_csv(results, order)
+    if results && results.any?
+      order.map { |column| "\"#{column}\"" }.join(',') + "\n" +       # Header
+          results.map { |result| result.to_csv(order) }.join("\n")   # Body
+    else
+      "No data available"
+    end
+  end
+
   def to_hash
     Hash[ result_fields.map { |field| [field.xpath.id, field.value] } ]
+  end
+
+  def to_csv(order)
+    order.map { |attr|
+      "\"#{self.send(attr.to_sym).to_s.gsub(/"/, '\"').gsub(/'/, '\'')}\""
+    }.join(',')
   end
 
   #def self.search(params)
