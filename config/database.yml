@@ -13,7 +13,7 @@ development:
   database: crawler
   pool: 55
   username: root
-  password: 1
+  password:
   host: localhost
 
 

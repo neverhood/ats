@@ -146,15 +146,4 @@ class ResultsController < ApplicationController
     sql.join('AND')
   end
 
-  #def to_csv(results)
-  #
-  #  if results && results.any?
-  #    @fields.map { |field| "\"#{field}\"" }.join(',') + "\n" +            # Header
-  #        results.map { |result_set| result_set.to_csv }.join("\n")   # Body
-  #  else
-  #    "No data available"
-  #  end
-  #
-  #end
-
 end

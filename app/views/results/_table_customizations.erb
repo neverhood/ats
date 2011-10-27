@@ -6,7 +6,7 @@
 
       <%= form.hidden_field :site_id, :value => @site.id %>
       <%= form.hidden_field :fields, :value => (@site.default_columns_order) %>
-      <%= form.hidden_field :page, :value => (params[:page] || 1) %>
+      <%= form.hidden_field :page, :value => 1 %>
 
       <h3> Filters </h3>
 

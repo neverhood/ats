@@ -389,6 +389,9 @@ $(document).ready(function() {
     }).
         bind('ajax:complete', function(event, xhr, status) {
             if ( status == 'success' ) {
+
+                $('#results_page').val( 1 );
+
                 $('#db-table-placeholder').html( $.parseJSON(xhr.responseText).table );
                 $('table.db_table').sorttable($.api.utils.sortTableHandler);
             }
@@ -425,6 +428,21 @@ $(document).ready(function() {
         if ( $('div.filter').length == 0 ) $('#active-filters').hide();
     });
 
+    // Pagination
+
+    $('nav.pagination a').live('click', function(event) {
+        if ( $('.db_table').length ) {
+            event.preventDefault();
+            event.stopPropagation();
+
+            var pageMatch = $(this).attr('href').match(/page=(\d+)/),
+                page = pageMatch ? pageMatch.pop() : 1;
+
+            $('#results_page').val( page );
+
+            $.api.utils.serializeAndSubmit();
+        }
+    });
 
     // CSV
 
